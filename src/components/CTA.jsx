@@ -1,4 +1,5 @@
 import React from 'react';
+import { EXTENSION_LINK } from '../constants';
 
 const CTA = () => {
   return (
@@ -11,7 +12,7 @@ const CTA = () => {
             Free forever. No account needed. Works on every website.
           </p>
           <a
-            href="https://chromewebstore.google.com/detail/YOUR_EXTENSION_ID"
+            href={EXTENSION_LINK}
             target="_blank"
             rel="noopener noreferrer"
             className="btn-primary"

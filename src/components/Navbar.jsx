@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { NavHashLink as NavLink } from 'react-router-hash-link';
 import { Link } from 'react-router-dom';
+import { EXTENSION_LINK } from '../constants';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -42,7 +43,7 @@ const Navbar = () => {
           <NavLink smooth to="/#shortcuts" className="nav-link" onClick={handleNavClick}>Shortcuts</NavLink>
           <NavLink smooth to="/#support" className="nav-link" onClick={handleNavClick}>Contact</NavLink>
           <NavLink smooth to="/#faq" className="nav-link" onClick={handleNavClick}>FAQ</NavLink>
-          <a href="https://chromewebstore.google.com/detail/YOUR_EXTENSION_ID" target="_blank" rel="noopener noreferrer" className="nav-cta">Add to Chrome</a>
+          <a href={EXTENSION_LINK} target="_blank" rel="noopener noreferrer" className="nav-cta">Add to Chrome</a>
         </div>
       </div>
     </nav>
