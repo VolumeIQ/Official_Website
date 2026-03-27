@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VolumeIQ - Intelligent Volume Control for Every Browser Tab</title>
+  <meta name="description" content="VolumeIQ lets you boost volume up to 600%, normalize audio, control every tab independently, and remember settings per site. Free Chrome Extension." />
+  <meta name="keywords" content="volume booster, chrome extension, tab volume control, audio normalizer, volume mixer, browser audio" />
+  <meta name="author" content="VolumeIQ" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:title" content="VolumeIQ - Intelligent Volume Control" />
+  <meta property="og:description" content="Boost volume up to 600%, normalize audio across sites, control every tab independently." />
+  <meta property="og:type" content="website" />
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --f-head: "Space Grotesk", system-ui, sans-serif;
+      --f-body: "IBM Plex Sans", system-ui, sans-serif;
+      --f-mono: "JetBrains Mono", monospace;
+
+      --bg-deep: #04040a;
+      --bg-mid:  #0d0d1f;
+      --glass-1: rgba(255,255,255,0.03);
+      --glass-2: rgba(255,255,255,0.055);
+      --glass-3: rgba(255,255,255,0.09);
+      --border-subtle: rgba(255,255,255,0.06);
+      --border-normal: rgba(255,255,255,0.10);
+      --border-strong: rgba(255,255,255,0.18);
+      --acc:#eab308;--acc-h:#fbbf24;
+      --acc-dim:rgba(234,179,8,0.10);--acc-bdr:rgba(234,179,8,0.25);
+      --acc-glow:rgba(234,179,8,0.20);--acc-glow-s:rgba(234,179,8,0.35);
+      --grn:#22d3a0;--red:#ef4444;
+      --t1:rgba(255,255,255,0.92);--t2:rgba(255,255,255,0.55);--t3:rgba(255,255,255,0.28);
+      --r-sm:10px;--r-md:14px;--r-lg:20px;--r-xl:28px;--r-pill:999px;
+      --ease:cubic-bezier(0.4,0,0.2,1);--spring:cubic-bezier(0.34,1.56,0.64,1);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    button{border:none;background:none;color:inherit;font:inherit;cursor:pointer;}
+    a{color:inherit;text-decoration:none;}img{max-width:100%;display:block;}ul,ol{list-style:none;}
+    html{scroll-behavior:smooth;scroll-padding-top:80px;}
+    body{
+      min-height:100vh;
+      background:radial-gradient(ellipse 80% 50% at 20% 8%,rgba(120,80,255,0.10),transparent 55%),radial-gradient(ellipse 60% 40% at 85% 20%,rgba(234,179,8,0.06),transparent 50%),radial-gradient(ellipse 50% 60% at 50% 85%,rgba(34,211,160,0.04),transparent 55%),var(--bg-deep);
+      color:var(--t1);font-family:var(--f-body);font-size:15px;line-height:1.6;
+      -webkit-font-smoothing:antialiased;overflow-x:hidden;
+    }
+    ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:5px;}
+    @media(prefers-reduced-motion:reduce){*{animation:none!important;transition-duration:0ms!important;}}
+
+    .container{max-width:1100px;margin:0 auto;padding:0 24px;}
+    .section{padding:100px 0;}
+    .section-label{font-family:var(--f-mono);font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--acc);margin-bottom:12px;}
+    .section-title{font-family:var(--f-head);font-size:clamp(28px,4vw,42px);font-weight:700;letter-spacing:-0.5px;margin-bottom:20px;line-height:1.15;}
+    .section-desc{font-size:16px;color:var(--t2);max-width:560px;line-height:1.7;}
+
+    /* NAV */
+    .nav{position:fixed;top:0;left:0;right:0;z-index:100;height:64px;background:rgba(4,4,10,0.75);border-bottom:1px solid var(--border-subtle);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);transition:background 0.3s;}
+    .nav-inner{max-width:1100px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:100%;}
+    .nav-brand{display:flex;align-items:center;gap:10px;}
+    .nav-logo{width:24px;height:24px;filter:drop-shadow(0 0 8px var(--acc-glow-s));}
+    .nav-name{font-family:var(--f-head);font-size:17px;font-weight:700;background:linear-gradient(135deg,var(--acc-h),var(--acc));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+    .nav-links{display:flex;align-items:center;gap:6px;}
+    .nav-link{font-size:13px;font-weight:500;color:var(--t2);padding:7px 14px;border-radius:var(--r-sm);transition:all 0.15s var(--ease);}
+    .nav-link:hover{color:var(--t1);background:var(--glass-2);}
+    .nav-cta{padding:8px 20px;border-radius:var(--r-pill);border:1px solid var(--acc-bdr);background:var(--acc-dim);color:var(--acc-h);font-family:var(--f-head);font-size:13px;font-weight:600;box-shadow:0 0 16px var(--acc-glow);transition:all 0.15s var(--ease);}
+    .nav-cta:hover{background:rgba(234,179,8,0.18);box-shadow:0 0 28px var(--acc-glow-s);}
+    .nav-patron{padding:8px 16px;border-radius:var(--r-pill);border:1px solid rgba(239,68,68,0.22);background:rgba(239,68,68,0.05);color:#f87171;font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px;transition:all 0.15s var(--ease);}
+    .nav-patron:hover{border-color:rgba(239,68,68,0.45);color:#fff;background:rgba(239,68,68,0.12);box-shadow:0 0 16px rgba(239,68,68,0.15);}
+    .nav-toggle{display:none;flex-direction:column;gap:5px;padding:8px;cursor:pointer;}
+    .nav-toggle span{width:20px;height:2px;background:var(--t2);border-radius:2px;transition:0.2s;}
+    @media(max-width:768px){
+      .nav-links{position:fixed;top:64px;left:0;right:0;background:rgba(4,4,10,0.95);backdrop-filter:blur(20px);flex-direction:column;padding:20px;gap:4px;border-bottom:1px solid var(--border-subtle);transform:translateY(-120%);transition:transform 0.3s var(--ease);}
+      .nav-links.open{transform:translateY(0);}
+      .nav-toggle{display:flex;}
+    }
+
+    /* HERO */
+    .hero{min-height:100vh;display:flex;align-items:center;padding:120px 0 80px;position:relative;overflow:hidden;}
+    .hero-bg-orb{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;opacity:0.5;}
+    .hero-orb-1{width:500px;height:500px;top:-100px;left:-100px;background:radial-gradient(circle,rgba(120,80,255,0.18),transparent 70%);}
+    .hero-orb-2{width:400px;height:400px;bottom:-80px;right:-80px;background:radial-gradient(circle,rgba(234,179,8,0.14),transparent 70%);}
+    .hero-inner{position:relative;z-index:1;display:flex;align-items:center;gap:60px;width:100%;}
+    .hero-text{flex:1;min-width:0;}
+    .hero-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border-radius:var(--r-pill);border:1px solid var(--acc-bdr);background:var(--acc-dim);font-family:var(--f-mono);font-size:11px;font-weight:500;color:var(--acc-h);margin-bottom:24px;box-shadow:0 0 12px var(--acc-glow);}
+    .hero-title{font-family:var(--f-head);font-size:clamp(36px,5.5vw,64px);font-weight:700;letter-spacing:-1.5px;line-height:1.08;margin-bottom:24px;}
+    .hero-title span{background:linear-gradient(135deg,var(--acc-h),var(--acc));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+    .hero-desc{font-size:17px;color:var(--t2);line-height:1.75;max-width:480px;margin-bottom:36px;}
+    .hero-actions{display:flex;gap:14px;flex-wrap:wrap;align-items:center;}
+    .btn-primary{position:relative;display:inline-flex;align-items:center;gap:8px;padding:14px 32px;border-radius:var(--r-pill);background:linear-gradient(135deg,var(--acc-h),var(--acc));color:#0a0a0f;font-family:var(--f-head);font-size:15px;font-weight:700;box-shadow:0 4px 24px var(--acc-glow-s);overflow:hidden;transition:all 0.2s var(--ease);}
+    .btn-primary::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.2),transparent 60%);opacity:0;transition:opacity 0.2s;}
+    .btn-primary:hover{box-shadow:0 8px 40px var(--acc-glow-s);transform:translateY(-2px);}
+    .btn-primary:hover::before{opacity:1;}
+    .btn-ghost{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:var(--r-pill);border:1px solid var(--border-normal);color:var(--t2);font-family:var(--f-head);font-size:15px;font-weight:600;transition:all 0.15s var(--ease);}
+    .btn-ghost:hover{border-color:var(--border-strong);color:var(--t1);background:var(--glass-2);}
+    .hero-stats{display:flex;gap:32px;margin-top:40px;}
+    .hero-stat-num{font-family:var(--f-mono);font-size:28px;font-weight:500;color:var(--acc-h);text-shadow:0 0 16px var(--acc-glow);}
+    .hero-stat-label{font-size:12px;color:var(--t3);margin-top:2px;}
+
+    /* LIVE DEMO POPUP */
+    .hero-visual{flex:0 0 auto;position:relative;}
+    .sim-frame{width:400px;background:var(--bg-deep);border-radius:var(--r-lg);border:1px solid var(--border-normal);box-shadow:0 32px 80px rgba(0,0,0,0.8),0 0 60px rgba(120,80,255,0.04);overflow:hidden;transition:transform 0.5s var(--ease);transform:perspective(1200px) rotateY(-6deg) rotateX(3deg);}
+    .sim-frame:hover{transform:perspective(1200px) rotateY(-1deg) rotateX(0deg);}
+    .sim-hdr{height:46px;padding:0 14px;background:rgba(255,255,255,0.025);border-bottom:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:space-between;}
+    .sim-hdr-left{display:flex;align-items:center;gap:8px;}
+    .sim-hdr-logo{width:14px;height:14px;opacity:0.6;}
+    .sim-hdr-site{font-family:var(--f-mono);font-size:11px;color:var(--t3);}
+    .sim-hdr-pills{display:flex; margin-left: 10rem;gap:4px;}
+    .sim-hdr-pill{padding:2px 8px;border-radius:var(--r-pill);font-family:var(--f-mono);font-size:9px;font-weight:500;letter-spacing:0.5px;text-transform:uppercase;}
+    .sim-pill-boost{background:var(--acc-dim);color:var(--acc-h);border:1px solid var(--acc-bdr);}
+    .sim-pill-norm{background:rgba(34,211,160,0.08);color:#34d399;border:1px solid rgba(34,211,160,0.22);}
+    .sim-hdr-gear{width:32px;height:32px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;color:var(--t3);}
+    .sim-body{padding:10px 12px 14px;display:flex;flex-direction:column;gap:8px;}
+
+    /* Sim Volume Card */
+    .sim-vol-card{position:relative;background:var(--glass-2);border:1px solid var(--border-normal);border-radius:var(--r-lg);backdrop-filter:blur(16px);padding:20px 18px 18px;display:flex;flex-direction:column;align-items:center;overflow:hidden;}
+    .sim-vol-card::before{content:'';position:absolute;top:-40%;left:50%;transform:translateX(-50%);width:70%;height:80%;border-radius:50%;background:radial-gradient(circle,rgba(234,179,8,0.06),transparent 70%);pointer-events:none;}
+    .sim-ring{position:relative;width:130px;height:130px;margin-bottom:10px;}
+    #sim-canvas{position:absolute;inset:0;width:130px;height:130px;}
+    .sim-ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;}
+    .sim-ring-num{font-family:var(--f-mono);font-size:38px;font-weight:500;letter-spacing:-3px;color:var(--acc-h);line-height:1;}
+    .sim-ring-pct{font-family:var(--f-mono);font-size:10px;color:var(--t2);}
+    .sim-ring-badge{margin-top:4px;padding:2px 8px;border-radius:var(--r-pill);font-family:var(--f-mono);font-size:8px;font-weight:500;letter-spacing:1px;color:var(--acc-h);background:var(--acc-dim);border:1px solid var(--acc-bdr);}
+    .sim-slider-wrap{width:100%;margin-bottom:12px;position:relative;}
+    #sim-slider{width:100%;height:6px;border-radius:var(--r-pill);outline:none;cursor:pointer;-webkit-appearance:none;appearance:none;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.04);}
+    #sim-slider::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,0.95);border:2px solid rgba(255,255,255,0.25);box-shadow:0 2px 12px rgba(0,0,0,0.45),0 0 16px var(--acc-glow);cursor:grab;}
+    .sim-marks{display:flex;justify-content:space-between;padding:5px 2px 0;font-family:var(--f-mono);font-size:8px;color:var(--t3);}
+    .sim-ctl{display:flex;align-items:center;width:100%;gap:6px;}
+    .sim-mute-btn{display:flex;align-items:center;gap:5px;padding:6px 12px;border:1px solid var(--border-subtle);border-radius:var(--r-pill);color:var(--t2);background:var(--glass-1);font-size:11px;font-weight:600;flex-shrink:0;transition:all 0.12s var(--ease);cursor:pointer;}
+    .sim-mute-btn:hover{border-color:var(--border-strong);color:var(--t1);background:var(--glass-3);}
+    .sim-mute-btn.muted{border-color:rgba(239,68,68,0.22);color:#f87171;background:rgba(239,68,68,0.08);}
+    .sim-presets{display:flex;gap:4px;flex:1;justify-content:center;}
+    .sim-chip{padding:5px 10px;border:1px solid var(--border-subtle);border-radius:var(--r-pill);font-family:var(--f-mono);font-size:10px;font-weight:500;color:var(--t3);cursor:pointer;transition:all 0.12s var(--ease);min-width:32px;text-align:center;}
+    .sim-chip:hover{border-color:var(--border-strong);color:var(--t2);background:var(--glass-2);}
+    .sim-chip.active{border-color:rgba(234,179,8,0.45);color:var(--acc-h);background:rgba(234,179,8,0.08);box-shadow:0 0 12px var(--acc-glow);}
+
+    /* Sim Accordion */
+    .sim-acc{background:var(--glass-1);border:1px solid var(--border-subtle);border-radius:var(--r-lg);overflow:hidden;}
+    .sim-acc-hdr{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;color:var(--t2);font-size:11px;font-weight:600;}
+    .sim-acc-left{display:flex;align-items:center;gap:7px;}
+    .sim-feat-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-top:1px solid var(--border-subtle);gap:10px;}
+    .sim-feat-name{font-size:12px;font-weight:600;color:var(--t1);}
+    .sim-feat-sub{font-size:10px;color:var(--t2);margin-top:1px;}
+    .sim-toggle{width:36px;height:20px;border-radius:var(--r-pill);border:1px solid var(--border-normal);background:rgba(255,255,255,0.06);flex-shrink:0;position:relative;cursor:pointer;transition:all 0.25s var(--ease);}
+    .sim-toggle::after{content:'';position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,0.45);transition:all 0.25s var(--spring);}
+    .sim-toggle.on{background:rgba(234,179,8,0.12);border-color:rgba(234,179,8,0.40);box-shadow:0 0 12px var(--acc-glow);}
+    .sim-toggle.on::after{background:var(--acc-h);transform:translateX(16px);box-shadow:0 0 10px rgba(251,191,36,0.6);}
+
+    /* Sim Mixer */
+    .sim-mixer-badge{padding:2px 8px;border-radius:var(--r-pill);background:var(--acc-dim);color:var(--acc-h);border:1px solid var(--acc-bdr);font-family:var(--f-mono);font-size:9px;font-weight:500;}
+    .sim-mixer-body{padding:4px 8px 8px;display:flex;flex-direction:column;gap:4px;}
+    .sim-mix-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--border-subtle);border-radius:var(--r-md);background:var(--glass-1);}
+    .sim-mix-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+    .sim-mix-name{flex:1;font-size:11px;font-weight:500;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .sim-mix-vol{font-family:var(--f-mono);font-size:10px;font-weight:600;color:var(--acc-h);min-width:30px;text-align:right;}
+    .sim-mix-mute{width:20px;height:20px;border-radius:5px;border:1px solid var(--border-subtle);background:var(--glass-2);display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--t2);}
+    .sim-footer{display:flex;justify-content:space-between;padding:3px 2px 0;font-size:10px;color:var(--t3);font-weight:500;}
+
+    @media(max-width:900px){
+      .hero-inner{flex-direction:column;text-align:center;}
+      .hero-desc{margin-left:auto;margin-right:auto;}
+      .hero-actions{justify-content:center;}
+      .hero-stats{justify-content:center;}
+      .hero-visual{order:-1;}
+      .sim-frame{width:min(360px,92vw);transform:none;}
+      .sim-frame:hover{transform:none;}
+    }
+
+    /* FEATURES */
+    .features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-top:48px;}
+    .feature-card{padding:28px;border-radius:var(--r-lg);background:var(--glass-1);border:1px solid var(--border-subtle);backdrop-filter:blur(8px);box-shadow:0 4px 24px rgba(0,0,0,0.3);transition:all 0.25s var(--ease);}
+    .feature-card:hover{background:var(--glass-2);border-color:var(--border-normal);transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,0.4);}
+    .fc-icon{width:44px;height:44px;border-radius:12px;background:var(--glass-3);border:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:center;margin-bottom:16px;font-size:18px;}
+    .fc-title{font-family:var(--f-head);font-size:17px;font-weight:700;margin-bottom:8px;}
+    .fc-desc{font-size:13px;color:var(--t2);line-height:1.7;}
+    .fc-badge{display:inline-block;margin-top:12px;padding:3px 10px;border-radius:var(--r-pill);font-family:var(--f-mono);font-size:10px;font-weight:500;letter-spacing:0.5px;text-transform:uppercase;}
+    .fc-badge.new{background:var(--acc-dim);color:var(--acc-h);border:1px solid var(--acc-bdr);}
+    .fc-badge.donor{background:rgba(239,68,68,0.10);color:#f87171;border:1px solid rgba(239,68,68,0.25);}
+
+    /* STEPS */
+    .steps-row{display:flex;gap:24px;margin-top:48px;counter-reset:step;}
+    .step-card{flex:1;padding:32px 24px;border-radius:var(--r-lg);background:var(--glass-1);border:1px solid var(--border-subtle);backdrop-filter:blur(8px);position:relative;counter-increment:step;}
+    .step-card::before{content:counter(step);position:absolute;top:-14px;left:24px;width:28px;height:28px;border-radius:50%;background:var(--acc-dim);border:1px solid var(--acc-bdr);display:flex;align-items:center;justify-content:center;font-family:var(--f-mono);font-size:12px;font-weight:500;color:var(--acc-h);box-shadow:0 0 12px var(--acc-glow);}
+    .step-title{font-family:var(--f-head);font-size:16px;font-weight:700;margin-bottom:8px;margin-top:8px;}
+    .step-desc{font-size:13px;color:var(--t2);line-height:1.7;}
+    @media(max-width:768px){.steps-row{flex-direction:column;}}
+
+    /* SHORTCUTS */
+    .shortcut-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-top:40px;}
+    .shortcut-item{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-radius:var(--r-md);background:var(--glass-1);border:1px solid var(--border-subtle);}
+    .sc-label{font-size:13px;font-weight:600;}
+    .sc-keys{display:flex;gap:4px;}
+    .sc-key{padding:4px 10px;border-radius:6px;background:var(--glass-3);border:1px solid var(--border-strong);font-family:var(--f-mono);font-size:11px;font-weight:500;box-shadow:0 2px 4px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.06);}
+
+    /* PATRON SECTION */
+    .patron-section{text-align:center;padding:80px 0;}
+    .patron-card{padding:48px 40px;border-radius:var(--r-xl);background:var(--glass-2);border:1px solid rgba(239,68,68,0.20);backdrop-filter:blur(16px);box-shadow:0 8px 40px rgba(0,0,0,0.4),0 0 60px rgba(239,68,68,0.06);position:relative;overflow:hidden;}
+    .patron-card::before{content:'';position:absolute;top:-50%;left:50%;transform:translateX(-50%);width:60%;height:100%;border-radius:50%;background:radial-gradient(circle,rgba(239,68,68,0.06),transparent 70%);pointer-events:none;}
+    .patron-perks{display:flex;gap:16px;margin:32px auto;max-width:600px;justify-content:center;flex-wrap:wrap;}
+    .patron-perk{display:flex;align-items:center;gap:8px;padding:10px 18px;border-radius:var(--r-pill);background:var(--glass-1);border:1px solid var(--border-subtle);font-size:13px;font-weight:500;color:var(--t2);}
+    .patron-perk svg{flex-shrink:0;color:#f87171;}
+
+    /* FAQ */
+    .faq-list{max-width:700px;margin-top:40px;}
+    .faq-item{border-bottom:1px solid var(--border-subtle);overflow:hidden;}
+    .faq-q{display:flex;align-items:center;justify-content:space-between;padding:20px 0;cursor:pointer;font-family:var(--f-head);font-size:15px;font-weight:600;transition:color 0.15s;}
+    .faq-q:hover{color:var(--acc-h);}
+    .faq-q::after{content:'+';font-size:20px;color:var(--t3);transition:transform 0.3s var(--ease);}
+    .faq-item.open .faq-q::after{transform:rotate(45deg);color:var(--acc-h);}
+    .faq-a{max-height:0;overflow:hidden;transition:max-height 0.4s var(--ease),padding 0.3s;font-size:14px;color:var(--t2);line-height:1.8;}
+    .faq-item.open .faq-a{max-height:300px;padding-bottom:20px;}
+
+    /* CTA */
+    .cta-section{text-align:center;padding:80px 0 100px;}
+    .cta-card{padding:60px 40px;border-radius:var(--r-xl);background:var(--glass-2);border:1px solid var(--acc-bdr);backdrop-filter:blur(16px);box-shadow:0 8px 40px rgba(0,0,0,0.4),0 0 80px var(--acc-glow);position:relative;overflow:hidden;}
+    .cta-card::before{content:'';position:absolute;top:-50%;left:50%;transform:translateX(-50%);width:60%;height:100%;border-radius:50%;background:radial-gradient(circle,rgba(234,179,8,0.06),transparent 70%);pointer-events:none;}
+
+    /* LEGAL */
+    .legal-page{display:none;padding:100px 0 60px;}
+    .legal-page.active{display:block;}
+    .legal-page h1{font-family:var(--f-head);font-size:28px;font-weight:700;margin-bottom:8px;}
+    .legal-page .legal-updated{font-size:12px;color:var(--t3);margin-bottom:32px;font-family:var(--f-mono);}
+    .legal-page h2{font-family:var(--f-head);font-size:18px;font-weight:700;margin:28px 0 10px;color:var(--acc-h);}
+    .legal-page p,.legal-page li{font-size:14px;color:var(--t2);line-height:1.8;margin-bottom:12px;}
+    .legal-page ul{padding-left:20px;}.legal-page ul li{list-style:disc;margin-bottom:6px;}
+    .legal-page a{color:var(--acc-h);text-decoration:underline;text-underline-offset:3px;}
+
+    /* FOOTER */
+    .footer{border-top:1px solid var(--border-subtle);padding:40px 0;}
+    .footer-inner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;}
+    .footer-brand{display:flex;align-items:center;gap:8px;}
+    .footer-brand-name{font-family:var(--f-head);font-size:14px;font-weight:700;color:var(--t2);}
+    .footer-links{display:flex;gap:20px;flex-wrap:wrap;}
+    .footer-link{font-size:12px;color:var(--t3);transition:color 0.15s;}.footer-link:hover{color:var(--acc-h);}
+    .footer-copy{font-size:11px;color:var(--t3);width:100%;text-align:center;margin-top:20px;}
+
+    @keyframes fadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+    .animate{opacity:0;transform:translateY(24px);}
+    .animate.visible{animation:fadeUp 0.6s var(--ease) forwards;}
+    .animate.d1{animation-delay:0.1s;}.animate.d2{animation-delay:0.2s;}.animate.d3{animation-delay:0.3s;}.animate.d4{animation-delay:0.4s;}
+    #main-content.hidden{display:none;}
+  </style>
+</head>
+
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="#" class="nav-brand" onclick="showMain()">
+      <img src="assets/logo.svg" alt="VolumeIQ Logo" class="nav-logo" />
+      <span class="nav-name">VolumeIQ</span>
+    </a>
+    <div class="nav-toggle" onclick="this.nextElementSibling.classList.toggle('open')"><span></span><span></span><span></span></div>
+    <div class="nav-links" id="nav-links">
+      <a href="#features" class="nav-link" onclick="showMain()">Features</a>
+      <a href="#how" class="nav-link" onclick="showMain()">How It Works</a>
+      <a href="#shortcuts" class="nav-link" onclick="showMain()">Shortcuts</a>
+      <a href="#faq" class="nav-link" onclick="showMain()">FAQ</a>
+      <a href="https://www.patreon.com/c/404_Found/membership" target="_blank" rel="noopener" class="nav-patron">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        Support
+      </a>
+      <a href="https://chromewebstore.google.com/detail/YOUR_EXTENSION_ID" target="_blank" rel="noopener" class="nav-cta">Add to Chrome</a>
+    </div>
+  </div>
+</nav>
+
+<div id="main-content">
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hero-bg-orb hero-orb-1"></div>
+  <div class="hero-bg-orb hero-orb-2"></div>
+  <div class="container">
+    <div class="hero-inner">
+      <div class="hero-text">
+        <div class="hero-badge">Free Chrome Extension - Zero Data Collection</div>
+        <h1 class="hero-title">Total Audio<br>Control for<br><span>Every Tab</span></h1>
+        <p class="hero-desc">Boost volume up to 600%, normalize loud & quiet audio automatically, and mix every tab independently - like a pro audio console for your browser.</p>
+        <div class="hero-actions">
+          <a href="https://chromewebstore.google.com/detail/YOUR_EXTENSION_ID" target="_blank" rel="noopener" class="btn-primary">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Add to Chrome - Free
+          </a>
+          <a href="#features" class="btn-ghost">See Features</a>
+        </div>
+        <div class="hero-stats">
+          <div><div class="hero-stat-num">600%</div><div class="hero-stat-label">Max Volume</div></div>
+          <div><div class="hero-stat-num">0</div><div class="hero-stat-label">Data Collected</div></div>
+          <div><div class="hero-stat-num">∞</div><div class="hero-stat-label">Tabs Supported</div></div>
+        </div>
+      </div>
+
+      <!-- LIVE INTERACTIVE DEMO -->
+      <div class="hero-visual">
+        <div class="sim-frame" id="sim-frame">
+          <div class="sim-hdr">
+            <div class="sim-hdr-left">
+              <img src="assets/logo.svg" alt="" class="sim-hdr-logo" />
+              <span class="sim-hdr-site">youtube.com</span>
+            </div>
+            <div class="sim-hdr-pills" id="sim-pills">
+              <span class="sim-hdr-pill sim-pill-boost" id="sim-boost-pill" style="display:none">BOOST</span>
+              <span class="sim-hdr-pill sim-pill-norm" id="sim-norm-pill" style="display:none">NORM</span>
+            </div>
+            <div class="sim-hdr-gear">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            </div>
+          </div>
+          <div class="sim-body">
+            <div class="sim-vol-card" id="sim-vol-card">
+              <div class="sim-ring"><canvas id="sim-canvas" width="130" height="130"></canvas><div class="sim-ring-center"><span class="sim-ring-num" id="sim-num">100</span><span class="sim-ring-pct">%</span><span class="sim-ring-badge" id="sim-badge" style="display:none">BOOST</span></div></div>
+              <div class="sim-slider-wrap">
+                <input type="range" id="sim-slider" min="0" max="600" step="1" value="100" />
+                <div class="sim-marks"><span>0</span><span>100</span><span>200</span><span>300</span><span>400</span><span>500</span><span>600</span></div>
+              </div>
+              <div class="sim-ctl">
+                <button class="sim-mute-btn" id="sim-mute">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07" id="sim-mute-wave"/></svg>
+                  <span id="sim-mute-label">Mute</span>
+                </button>
+                <div class="sim-presets" id="sim-presets">
+                  <div class="sim-chip" data-v="50">50</div>
+                  <div class="sim-chip" data-v="75">75</div>
+                  <div class="sim-chip active" data-v="100">100</div>
+                  <div class="sim-chip" data-v="150">150</div>
+                  <div class="sim-chip" data-v="200">200</div>
+                </div>
+              </div>
+            </div>
+            <div class="sim-acc">
+              <div class="sim-acc-hdr"><div class="sim-acc-left"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><circle cx="8" cy="6" r="2" fill="currentColor" stroke="none"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="16" cy="12" r="2" fill="currentColor" stroke="none"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="10" cy="18" r="2" fill="currentColor" stroke="none"/></svg> Audio Settings</div><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
+              <div class="sim-feat-row"><div><div class="sim-feat-name">Normalize Audio</div></div><div class="sim-toggle" id="sim-norm" onclick="toggleNorm()"></div></div>
+              <div class="sim-feat-row"><div><div class="sim-feat-name">Smart Ducking</div><div class="sim-feat-sub">Lower background tabs</div></div><div class="sim-toggle on"></div></div>
+              <div class="sim-feat-row"><div><div class="sim-feat-name">Remember this site</div></div><div class="sim-toggle on"></div></div>
+            </div>
+            <div class="sim-acc">
+              <div class="sim-acc-hdr"><div class="sim-acc-left"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg> Tab Mixer <span class="sim-mixer-badge">3 tabs</span></div><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
+              <div class="sim-mixer-body">
+                <div class="sim-mix-item"><div class="sim-mix-dot" style="background:var(--acc-h)"></div><span class="sim-mix-name">YouTube - Lo-fi Beats</span><span class="sim-mix-vol">150%</span><div class="sim-mix-mute"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></div></div>
+                <div class="sim-mix-item"><div class="sim-mix-dot" style="background:var(--grn)"></div><span class="sim-mix-name">Spotify - Podcast</span><span class="sim-mix-vol">80%</span><div class="sim-mix-mute"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></div></div>
+                <div class="sim-mix-item"><div class="sim-mix-dot" style="background:var(--t3)"></div><span class="sim-mix-name">Twitch - Live Stream</span><span class="sim-mix-vol" style="color:#f87171">MUT</span><div class="sim-mix-mute" style="color:#f87171;border-color:rgba(239,68,68,0.22);background:rgba(239,68,68,0.08)"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg></div></div>
+              </div>
+            </div>
+            <div class="sim-footer"><span>All settings & shortcuts</span><span>Export</span><span>Import</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section" id="features">
+  <div class="container">
+    <div class="section-label animate">Features</div>
+    <h2 class="section-title animate d1">Everything you need<br>for perfect audio</h2>
+    <p class="section-desc animate d2">No more fumbling with system volume or browser tabs.</p>
+    <div class="features-grid">
+      <div class="feature-card animate"><div class="fc-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--acc-h)" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></div><div class="fc-title">Volume Boost - 600%</div><div class="fc-desc">Go beyond the browser's 100% limit. Amplify quiet videos, podcasts, and music using Web Audio API gain processing.</div></div>
+      <div class="feature-card animate d1"><div class="fc-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--acc-h)" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><circle cx="8" cy="6" r="2" fill="var(--acc-h)" stroke="none"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="16" cy="12" r="2" fill="var(--acc-h)" stroke="none"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="10" cy="18" r="2" fill="var(--acc-h)" stroke="none"/></svg></div><div class="fc-title">Tab Mixer</div><div class="fc-desc">Independent volume sliders for every open tab. Mute, solo, play/pause, and mix tabs like a professional audio console.</div></div>
+      <div class="feature-card animate d2"><div class="fc-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--acc-h)" stroke-width="2"><path d="M2 12h4l3-9 4 18 3-9h4"/></svg></div><div class="fc-title">Audio Normalization</div><div class="fc-desc">Automatically balances loud and quiet audio in real-time using RMS analysis. No more volume jumps between content.</div></div>
+      <div class="feature-card animate d3"><div class="fc-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--acc-h)" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></div><div class="fc-title">Per-Site Memory</div><div class="fc-desc">Remembers volume for each website automatically. YouTube at 150%, Netflix at 80% - set once, applied forever.</div><span class="fc-badge new">Auto-Save</span></div>
+      <div class="feature-card animate d4"><div class="fc-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--acc-h)" stroke-width="2"><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg></div><div class="fc-title">Smart Audio Ducking</div><div class="fc-desc">When you switch tabs, background tabs automatically lower their volume. Your active content always takes priority.</div><span class="fc-badge new">New</span></div>
+      <div class="feature-card animate"><div class="fc-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2"><circle cx="13.5" cy="6.5" r="2.5"/><path d="M17 2H2v20h20V7"/></svg></div><div class="fc-title">Donor Themes</div><div class="fc-desc">Unlock exclusive visual themes like Cyberpunk Neon and Matrix Terminal. Full UI color overhaul, not just a tint.</div><span class="fc-badge donor">Patron</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW -->
+<section class="section" id="how" style="background:var(--glass-1);">
+  <div class="container">
+    <div class="section-label animate">How It Works</div>
+    <h2 class="section-title animate d1">Three steps to perfect audio</h2>
+    <div class="steps-row">
+      <div class="step-card animate d1"><div class="step-title">Install Extension</div><div class="step-desc">Click "Add to Chrome" - free, zero config. Works immediately on every website with HTML5 media.</div></div>
+      <div class="step-card animate d2"><div class="step-title">Click the Icon</div><div class="step-desc">Open VolumeIQ from the toolbar. See the VU ring, slider, presets, and all audio settings for the current site.</div></div>
+      <div class="step-card animate d3"><div class="step-title">Adjust & Forget</div><div class="step-desc">Set your preferred volume. VolumeIQ remembers it per site. Next visit - your volume is already applied.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- SHORTCUTS -->
+<section class="section" id="shortcuts">
+  <div class="container">
+    <div class="section-label animate">Keyboard Shortcuts</div>
+    <h2 class="section-title animate d1">Power user controls</h2>
+    <p class="section-desc animate d2">All shortcuts use Alt+Shift. Customizable in Chrome settings.</p>
+    <div class="shortcut-grid">
+      <div class="shortcut-item animate"><span class="sc-label">Volume Up</span><div class="sc-keys"><span class="sc-key">Alt</span><span class="sc-key">Shift</span><span class="sc-key">↑</span></div></div>
+      <div class="shortcut-item animate d1"><span class="sc-label">Volume Down</span><div class="sc-keys"><span class="sc-key">Alt</span><span class="sc-key">Shift</span><span class="sc-key">↓</span></div></div>
+      <div class="shortcut-item animate d2"><span class="sc-label">Toggle Mute</span><div class="sc-keys"><span class="sc-key">Alt</span><span class="sc-key">Shift</span><span class="sc-key">M</span></div></div>
+      <div class="shortcut-item animate d3"><span class="sc-label">Reset to 100%</span><div class="sc-keys"><span class="sc-key">Alt</span><span class="sc-key">Shift</span><span class="sc-key">R</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PATRON -->
+<section class="patron-section" id="support">
+  <div class="container">
+    <div class="patron-card animate">
+      <div class="section-label">Support Development</div>
+      <h2 class="section-title" style="margin-bottom:12px;">Built by a solo developer</h2>
+      <p class="section-desc" style="margin:0 auto 24px;text-align:center;">VolumeIQ is free, ad-free, and collects zero data. Your support keeps it alive and unlocks exclusive themes.</p>
+      <a href="https://www.patreon.com/c/404_Found/membership" target="_blank" rel="noopener" class="btn-primary" style="color: #f3f3f3;font-size:15px;padding:14px 36px;margin-top:8px;background:linear-gradient(135deg,#ef4444,#e34949);box-shadow:0 4px 24px rgba(239,68,68,0.2);">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        Become a Patron
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section" id="faq" style="background:var(--glass-1);">
+  <div class="container">
+    <div class="section-label animate">FAQ</div>
+    <h2 class="section-title animate d1">Common Questions</h2>
+    <div class="faq-list">
+      <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Is VolumeIQ free?</div><div class="faq-a">Yes, completely free with all features. Optional patron themes support development but are purely cosmetic.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Does it collect my data?</div><div class="faq-a">No. Zero analytics, zero tracking, zero servers. All data stays in your browser's local storage and optional Chrome Sync.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Will boosting above 100% damage speakers?</div><div class="faq-a">The boost amplifies the browser's audio signal, not system volume. Use the Safe Volume feature to set a cap for hearing protection.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Does it work on Netflix / Spotify?</div><div class="faq-a">DRM sites work at up to 100%. Boost, normalization require non-DRM audio. Per-site memory, mute, and mixer work on all sites.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">How is this different from other volume boosters?</div><div class="faq-a">Most boosters just amplify. VolumeIQ offers per-tab mixing, normalization, per-site memory, smart ducking, keyboard shortcuts, and a premium UI - all with zero data collection.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Can I export / import settings?</div><div class="faq-a">Yes. Settings → Data → Export downloads a JSON file. Import on another device to restore everything.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="container">
+    <div class="cta-card animate">
+      <div class="section-label">Ready?</div>
+      <h2 class="section-title" style="margin-bottom:16px;">Take control of your audio</h2>
+      <p class="section-desc" style="margin:0 auto 32px;text-align:center;">Free forever. No account needed. Works on every website.</p>
+      <a href="https://chromewebstore.google.com/detail/YOUR_EXTENSION_ID" target="_blank" rel="noopener" class="btn-primary" style="font-size:16px;padding:16px 40px;">Add to Chrome - Free</a>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<!-- PRIVACY -->
+<div class="legal-page container" id="privacy-page">
+  <h1>Privacy Policy</h1><p class="legal-updated">Last updated: June 2025</p>
+  <h2>Overview</h2><p>VolumeIQ is committed to protecting your privacy. This policy explains what data the Extension accesses and how it's used.</p>
+  <h2>Data Collection</h2><p><strong>VolumeIQ collects zero personal data.</strong></p>
+  <ul><li>No analytics or usage data</li><li>No cookies or tracking</li><li>No external server communication</li><li>No browsing history access beyond active tab hostname</li><li>No personally identifiable information</li></ul>
+  <h2>Data Stored Locally</h2><p>Stored locally using Chrome storage APIs:</p>
+  <ul><li><strong>Site preferences:</strong> hostname + volume level</li><li><strong>Settings:</strong> normalization, ducking, theme, presets</li><li><strong>Session state:</strong> per-tab volume/mute (cleared on tab close)</li></ul>
+  <p>Chrome Sync may sync settings across devices through your Google account. VolumeIQ has no access to your Google account.</p>
+  <h2>Permissions</h2>
+  <ul><li><strong>"Access data on all websites"</strong> - Injects audio processing script. Only interacts with &lt;audio&gt;/&lt;video&gt; elements.</li><li><strong>"tabs"</strong> - Tab Mixer feature.</li><li><strong>"storage"</strong> - Save preferences.</li><li><strong>"favicon"</strong> - Display site icons.</li></ul>
+  <h2>Third-Party Services</h2><p>Zero third-party services, SDKs, or analytics. No ads, no telemetry.</p>
+  <h2>Data Deletion</h2><p>Delete all data: Settings → Data → "Reset All Data", or uninstall the Extension.</p>
+  <h2>Contact</h2><p><a href="mailto:privacy@volumeiq.com">privacy@volumeiq.com</a></p>
+  <p style="margin-top:32px;"><a href="#" onclick="showMain();return false;">← Back to home</a></p>
+</div>
+
+<!-- TERMS -->
+<div class="legal-page container" id="terms-page">
+  <h1>Terms of Service</h1><p class="legal-updated">Last updated: June 2025</p>
+  <h2>Acceptance</h2><p>By installing VolumeIQ, you agree to these Terms. If you disagree, uninstall the Extension.</p>
+  <h2>Service</h2><p>VolumeIQ is a free browser extension for audio control in Google Chrome. Operates entirely within your browser.</p>
+  <h2>License</h2><p>Freeware for personal or commercial use. You may not reverse-engineer, redistribute outside Chrome Web Store, or use to circumvent DRM.</p>
+  <h2>Donor Themes</h2><p>Optional cosmetic themes unlocked via patron codes. Non-refundable, non-transferable, visual only.</p>
+  <h2>Disclaimer</h2><p>Provided "as is" without warranties. Not liable for hearing damage from excessive volume - use Safe Volume feature.</p>
+  <h2>DRM</h2><p>Respects DRM protections. Boost disabled on encrypted media sites. Does not bypass content protection.</p>
+  <h2>Contact</h2><p><a href="mailto:legal@volumeiq.com">legal@volumeiq.com</a></p>
+  <p style="margin-top:32px;"><a href="#" onclick="showMain();return false;">← Back to home</a></p>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <img src="assets/logo.svg" alt="" width="20" height="20" style="margin-right:8px; opacity:0.8;" />
+        <span class="footer-brand-name">VolumeIQ</span>
+      </div>
+      <div class="footer-links">
+        <a href="#features" class="footer-link" onclick="showMain()">Features</a>
+        <a href="#faq" class="footer-link" onclick="showMain()">FAQ</a>
+        <a href="#" class="footer-link" onclick="showPage('privacy-page');return false;">Privacy Policy</a>
+        <a href="#" class="footer-link" onclick="showPage('terms-page');return false;">Terms</a>
+        <a href="mailto:support@volumeiq.com" class="footer-link">Contact</a>
+        <a href="https://www.patreon.com/c/404_Found/membership" target="_blank" rel="noopener" class="footer-link" style="color:#ef4444;font-weight:700;">Support Us</a>
+      </div>
+      <div class="footer-copy">© 2025 VolumeIQ. All rights reserved.</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+function showPage(id){document.getElementById('main-content').classList.add('hidden');document.querySelectorAll('.legal-page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo({top:0,behavior:'smooth'});document.getElementById('nav-links').classList.remove('open');}
+function showMain(){document.getElementById('main-content').classList.remove('hidden');document.querySelectorAll('.legal-page').forEach(p=>p.classList.remove('active'));document.getElementById('nav-links').classList.remove('open');}
+const observer=new IntersectionObserver(e=>{e.forEach(en=>{if(en.isIntersecting){en.target.classList.add('visible');observer.unobserve(en.target);}});},{threshold:0.1,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.animate').forEach(el=>observer.observe(el));
+let ticking=false;window.addEventListener('scroll',()=>{if(!ticking){requestAnimationFrame(()=>{const n=document.getElementById('nav');if(window.scrollY>50){n.style.background='rgba(4,4,10,0.92)';n.style.borderBottomColor='rgba(255,255,255,0.08)';}else{n.style.background='rgba(4,4,10,0.75)';n.style.borderBottomColor='rgba(255,255,255,0.06)';}ticking=false;});ticking=true;}});
+(function(){const h=window.location.hash;if(h==='#privacy')showPage('privacy-page');if(h==='#terms')showPage('terms-page');})();
+
+// ── Live Demo Logic ────────────────────────────────────────────────────────────
+const simSlider=document.getElementById('sim-slider');
+const simNum=document.getElementById('sim-num');
+const simBadge=document.getElementById('sim-badge');
+const simBoostPill=document.getElementById('sim-boost-pill');
+const simNormPill=document.getElementById('sim-norm-pill');
+const simCanvas=document.getElementById('sim-canvas');
+const simCtx=simCanvas.getContext('2d');
+const simMuteBtn=document.getElementById('sim-mute');
+const simMuteLabel=document.getElementById('sim-mute-label');
+const simMuteWave=document.getElementById('sim-mute-wave');
+const simPresets=document.getElementById('sim-presets');
+let simVol=100,simMuted=false,simNormOn=false;
+
+function updateSim(){
+  simNum.textContent=simVol;
+  simSlider.value=simVol;
+  simBadge.style.display=simVol>100?'block':'none';
+  simBoostPill.style.display=simVol>100?'inline':'none';
+  simBoostPill.textContent=simVol+'%';
+  simPresets.querySelectorAll('.sim-chip').forEach(c=>c.classList.toggle('active',parseInt(c.dataset.v)===simVol));
+  const pct=simVol/600;
+  simSlider.style.background=`linear-gradient(to right,${simVol<=100?'#22d3a0':simVol<=200?'#22d3a0,#f59e0b':simVol<=400?'#f59e0b,#f97316':'#f97316,#ef4444'}) left/${pct*100}% 100% no-repeat, rgba(255,255,255,0.06)`;
+  if(simVol<=100)simNum.style.color='#22d3a0';
+  else if(simVol<=200)simNum.style.color='#fbbf24';
+  else if(simVol<=400)simNum.style.color='#f97316';
+  else simNum.style.color='#ef4444';
+}
+
+simSlider.addEventListener('input',()=>{simVol=parseInt(simSlider.value);updateSim();});
+simPresets.addEventListener('click',e=>{const v=e.target.dataset?.v;if(v){simVol=parseInt(v);updateSim();}});
+simMuteBtn.addEventListener('click',()=>{
+  simMuted=!simMuted;
+  simMuteBtn.classList.toggle('muted',simMuted);
+  simMuteLabel.textContent=simMuted?'Unmute':'Mute';
+  simMuteWave.style.display=simMuted?'none':'';
+});
+function toggleNorm(){
+  simNormOn=!simNormOn;
+  document.getElementById('sim-norm').classList.toggle('on',simNormOn);
+  simNormPill.style.display=simNormOn?'inline':'none';
+}
+
+// VU Ring
+function drawSimRing(){
+  simCtx.clearRect(0,0,130,130);
+  const cx=65,cy=65,R=55,sa=Math.PI*0.75,ta=Math.PI*1.5;
+  simCtx.beginPath();simCtx.arc(cx,cy,R,sa,sa+ta);simCtx.strokeStyle='rgba(255,255,255,0.05)';simCtx.lineWidth=5;simCtx.lineCap='round';simCtx.stroke();
+  const pct=Math.min(simVol/600,1),va=ta*pct;
+  if(va>0){
+    const ex=cx+R*Math.cos(sa+va),ey=cy+R*Math.sin(sa+va);
+    const g=simCtx.createLinearGradient(cx+R*Math.cos(sa),cy+R*Math.sin(sa),ex,ey);
+    g.addColorStop(0,'#22d3a0');g.addColorStop(0.38,'#f59e0b');g.addColorStop(0.72,'#f97316');g.addColorStop(1,'#ef4444');
+    simCtx.beginPath();simCtx.arc(cx,cy,R,sa,sa+va);simCtx.strokeStyle=g;simCtx.lineWidth=5;simCtx.lineCap='round';simCtx.stroke();
+  }
+  // Fake EQ bars
+  const now=Date.now();
+  for(let i=0;i<10;i++){
+    const h=simMuted?2:Math.max(3,12*Math.abs(Math.sin(now/300+i*0.7))*Math.min(simVol/200,1));
+    const x=cx-27+i*6;
+    simCtx.beginPath();simCtx.moveTo(x,cy+12);simCtx.lineTo(x,cy+12-h);
+    simCtx.strokeStyle=`rgba(234,179,8,${simMuted?0.1:0.3+Math.sin(now/200+i)*0.3})`;simCtx.lineWidth=2.5;simCtx.lineCap='round';simCtx.stroke();
+  }
+  requestAnimationFrame(drawSimRing);
+}
+drawSimRing();
+updateSim();
+</script>
+</body>
+</html>
