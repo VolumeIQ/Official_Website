@@ -1,6 +1,7 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
-export const Privacy = ({ onBack }) => (
+export const Privacy = () => (
   <div className="legal-page container" id="privacy-page">
     <h1>Privacy Policy</h1><p className="legal-updated">Last updated: March 2026</p>
     <h2>Overview</h2><p>VolumeIQ is committed to protecting your privacy. This policy explains what data the Extension accesses and how it's used.</p>
@@ -13,12 +14,12 @@ export const Privacy = ({ onBack }) => (
     <ul><li><strong>"Access data on all websites"</strong> - Injects audio processing script. Only interacts with &lt;audio&gt;/&lt;video&gt; elements.</li><li><strong>"tabs"</strong> - Tab Mixer feature.</li><li><strong>"storage"</strong> - Save preferences.</li><li><strong>"favicon"</strong> - Display site icons.</li></ul>
     <h2>Third-Party Services</h2><p>Zero third-party services, SDKs, or analytics. No ads, no telemetry.</p>
     <h2>Data Deletion</h2><p>Delete all data: Settings → Data → "Reset All Data", or uninstall the Extension.</p>
-    <h2>Contact</h2><p><a href="mailto:404found1347@gmail.com">404found1347@gmail.com</a></p>
-    <p style={{ marginTop: '32px' }}><a href="#" onClick={(e) => { e.preventDefault(); onBack(); }}>← Back to home</a></p>
+    <h2>Contact</h2><p><a href="mailto:404found1347@gmail.com">Email Me</a></p>
+    <p style={{ marginTop: '32px' }}><Link to="/">← Back to home</Link></p>
   </div>
 );
 
-export const Terms = ({ onBack }) => (
+export const Terms = () => (
   <div className="legal-page container" id="terms-page">
     <h1>Terms of Service</h1><p className="legal-updated">Last updated: March 2026 </p>
     <h2>Acceptance</h2><p>By installing VolumeIQ, you agree to these Terms. If you disagree, uninstall the Extension.</p>
@@ -27,7 +28,7 @@ export const Terms = ({ onBack }) => (
     <h2>Donor Themes</h2><p>Optional cosmetic themes unlocked via patron codes. Non-refundable, non-transferable, visual only.</p>
     <h2>Disclaimer</h2><p>Provided "as is" without warranties. Not liable for hearing damage from excessive volume - use Safe Volume feature.</p>
     <h2>DRM</h2><p>Respects DRM protections. Boost disabled on encrypted media sites. Does not bypass content protection.</p>
-    <h2>Contact</h2><p><a href="mailto:404found1347@gmail.com">404found1347@gmail.com</a></p>
-    <p style={{ marginTop: '32px' }}><a href="#" onClick={(e) => { e.preventDefault(); onBack(); }}>← Back to home</a></p>
+    <h2>Contact</h2><p><a href="mailto:404found1347@gmail.com">Email Me</a></p>
+    <p style={{ marginTop: '32px' }}><Link to="/">← Back to home</Link></p>
   </div>
 );

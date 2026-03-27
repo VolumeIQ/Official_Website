@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { NavHashLink as NavLink } from 'react-router-hash-link';
+import { Link } from 'react-router-dom';
 
-const Navbar = ({ onShowMain, onShowPage }) => {
+const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -12,9 +14,8 @@ const Navbar = ({ onShowMain, onShowPage }) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleNavClick = (id) => {
+  const handleNavClick = () => {
     setIsOpen(false);
-    onShowMain();
   };
 
   return (
@@ -26,21 +27,21 @@ const Navbar = ({ onShowMain, onShowPage }) => {
       }}
     >
       <div className="nav-inner">
-        <a href="#" className="nav-brand" onClick={(e) => { e.preventDefault(); onShowMain(); }}>
+        <Link to="/" className="nav-brand" onClick={handleNavClick}>
           <img src="/assets/logo.svg" alt="VolumeIQ Logo" className="nav-logo" />
           <span className="nav-name">VolumeIQ</span>
-        </a>
+        </Link>
         
         <div className="nav-toggle" onClick={() => setIsOpen(!isOpen)}>
           <span></span><span></span><span></span>
         </div>
 
         <div className={`nav-links ${isOpen ? 'open' : ''}`}>
-          <a href="#features" className="nav-link" onClick={() => handleNavClick('features')}>Features</a>
-          <a href="#how" className="nav-link" onClick={() => handleNavClick('how')}>How It Works</a>
-          <a href="#shortcuts" className="nav-link" onClick={() => handleNavClick('shortcuts')}>Shortcuts</a>
-          <a href="#support" className="nav-link" onClick={() => handleNavClick('support')}>Contact</a>
-          <a href="#faq" className="nav-link" onClick={() => handleNavClick('faq')}>FAQ</a>
+          <NavLink smooth to="/#features" className="nav-link" onClick={handleNavClick}>Features</NavLink>
+          <NavLink smooth to="/#how" className="nav-link" onClick={handleNavClick}>How It Works</NavLink>
+          <NavLink smooth to="/#shortcuts" className="nav-link" onClick={handleNavClick}>Shortcuts</NavLink>
+          <NavLink smooth to="/#support" className="nav-link" onClick={handleNavClick}>Contact</NavLink>
+          <NavLink smooth to="/#faq" className="nav-link" onClick={handleNavClick}>FAQ</NavLink>
           <a href="https://chromewebstore.google.com/detail/YOUR_EXTENSION_ID" target="_blank" rel="noopener noreferrer" className="nav-cta">Add to Chrome</a>
         </div>
       </div>

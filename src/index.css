@@ -1235,3 +1235,42 @@ body {
   text-align: center;
   margin-top: 20px;
 }
+
+/* 404 Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-15px) rotate(2deg); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 30px var(--acc-glow); }
+  50% { box-shadow: 0 0 60px var(--acc-glow-s); }
+}
+
+@keyframes glitch {
+  0% { transform: translate(0); text-shadow: none; }
+  20% { transform: translate(-2px, 2px); text-shadow: 2px 0 var(--red), -2px 0 var(--grn); }
+  40% { transform: translate(-2px, -2px); text-shadow: -2px 0 var(--red), 2px 0 var(--grn); }
+  60% { transform: translate(2px, 2px); text-shadow: 2px 0 var(--red), -2px 0 var(--grn); }
+  80% { transform: translate(2px, -2px); text-shadow: -2px 0 var(--red), 2px 0 var(--grn); }
+  100% { transform: translate(0); text-shadow: none; }
+}
+
+.float-anim { animation: float 6s ease-in-out infinite; }
+.pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
+.glitch-anim { animation: glitch 4s linear infinite; }
+
+.channel-logo-wrapper {
+  position: relative;
+  z-index: 1;
+}
+
+.channel-logo-wrapper::after {
+  content: '';
+  position: absolute;
+  inset: -20px;
+  background: radial-gradient(circle, var(--acc-glow), transparent 70%);
+  z-index: -1;
+  filter: blur(25px);
+  opacity: 0.6;
+}

@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Features from './components/Features';
@@ -9,19 +10,32 @@ import FAQ from './components/FAQ';
 import CTA from './components/CTA';
 import Footer from './components/Footer';
 import { Privacy, Terms } from './components/Legal';
+import NotFound from './components/NotFound';
 import './App.css';
 
+const Home = () => {
+  return (
+    <main id="main-content">
+      <Hero />
+      <Features />
+      <HowTo />
+      <Shortcuts />
+      <Support />
+      <FAQ />
+      <CTA />
+    </main>
+  );
+};
+
 function App() {
-  const [currentPage, setCurrentPage] = useState('home');
+  const location = useLocation();
 
   useEffect(() => {
+    // Intersection Observer for animations
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           entry.target.classList.add('visible');
-          // No unobserve here to allow it to trigger again if needed, 
-          // or keep unobserve if we want it only once. 
-          // The request implies "loading as you scroll", so once is typical.
           observer.unobserve(entry.target);
         }
       });
@@ -30,7 +44,7 @@ function App() {
       rootMargin: '0px 0px -50px 0px'
     });
 
-    // Re-scan whenever currentPage changes, with a slight delay to ensure DOM is ready
+    // Re-scan whenever location changes (pathname or hash)
     const timer = setTimeout(() => {
       const elements = document.querySelectorAll('.animate');
       elements.forEach(el => {
@@ -38,58 +52,41 @@ function App() {
           observer.observe(el);
         }
       });
-    }, 100);
+
+      // Handle hash scrolling if on Home page
+      if (location.pathname === '/' && location.hash) {
+        const el = document.querySelector(location.hash);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+    }, 150); // Slight delay to ensure React has rendered the new route
 
     return () => {
       clearTimeout(timer);
       observer.disconnect();
     };
-  }, [currentPage]);
+  }, [location.pathname, location.hash]);
 
+  // Scroll to top on route change (if no hash)
   useEffect(() => {
-    const handleHash = () => {
-      const hash = window.location.hash;
-      if (hash === '#privacy') setCurrentPage('privacy');
-      else if (hash === '#terms') setCurrentPage('terms');
-      else setCurrentPage('home');
-    };
-
-    window.addEventListener('hashchange', handleHash);
-    handleHash();
-
-    return () => window.removeEventListener('hashchange', handleHash);
-  }, []);
-
-  const showMain = () => {
-    setCurrentPage('home');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const showPage = (page) => {
-    setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+    if (!location.hash) {
+      window.scrollTo(0, 0);
+    }
+  }, [location.pathname]);
 
   return (
     <div className="app">
-      <Navbar onShowMain={showMain} onShowPage={showPage} />
+      <Navbar />
       
-      {currentPage === 'home' && (
-        <main id="main-content">
-          <Hero />
-          <Features />
-          <HowTo />
-          <Shortcuts />
-          <Support />
-          <FAQ />
-          <CTA />
-        </main>
-      )}
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/terms" element={<Terms />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
 
-      {currentPage === 'privacy' && <Privacy onBack={showMain} />}
-      {currentPage === 'terms' && <Terms onBack={showMain} />}
-
-      <Footer onShowMain={showMain} onShowPage={showPage} />
+      <Footer />
     </div>
   );
 }

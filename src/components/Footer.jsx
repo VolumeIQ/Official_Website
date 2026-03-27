@@ -1,6 +1,8 @@
 import React from 'react';
+import { NavHashLink as NavLink } from 'react-router-hash-link';
+import { Link } from 'react-router-dom';
 
-const Footer = ({ onShowMain, onShowPage }) => {
+const Footer = () => {
   return (
     <footer className="footer">
       <div className="container">
@@ -10,18 +12,16 @@ const Footer = ({ onShowMain, onShowPage }) => {
             <span className="footer-brand-name">VolumeIQ</span>
           </div>
           <div className="footer-links">
-            <a href="#features" className="footer-link" onClick={(e) => { e.preventDefault(); onShowMain(); document.getElementById('features')?.scrollIntoView({behavior: 'smooth'}); }}>Features</a>
-            <a href="#faq" className="footer-link" onClick={(e) => { e.preventDefault(); onShowMain(); document.getElementById('faq')?.scrollIntoView({behavior: 'smooth'}); }}>FAQ</a>
-            <a href="#" className="footer-link" onClick={(e) => { e.preventDefault(); onShowPage('privacy'); }}>Privacy Policy</a>
-            <a href="#" className="footer-link" onClick={(e) => { e.preventDefault(); onShowPage('terms'); }}>Terms</a>
+            <NavLink smooth to="/#features" className="footer-link">Features</NavLink>
+            <NavLink smooth to="/#how" className="footer-link">How It Works</NavLink>
+            <NavLink smooth to="/#faq" className="footer-link">FAQ</NavLink>
+            <Link to="/privacy" className="footer-link">Privacy Policy</Link>
+            <Link to="/terms" className="footer-link">Terms</Link>
             <a href="mailto:404found1347@gmail.com" className="footer-link">
-              404found1347@gmail.com
+              Email Me
             </a>
             <a href="https://www.youtube.com/@404-Found/videos" target="_blank" rel="noopener noreferrer" className="footer-link" title="YouTube Channel">
               YouTube Channel
-            </a>
-            <a href="https://www.patreon.com/c/404_Found/membership" target="_blank" rel="noopener noreferrer" className="footer-link" style={{ color: '#ef4444', fontWeight: 700 }}>
-              Donate
             </a>
           </div>
           <div className="footer-copy">© 2026 VolumeIQ. All rights reserved.</div>
