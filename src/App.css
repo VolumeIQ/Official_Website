@@ -1,0 +1,15 @@
+/* App-wide overrides and utilities */
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+#main-content {
+  flex: 1;
+}
+
+/* Fix for slider track in some browsers */
+input[type=range].sim-slider::-webkit-slider-runnable-track {
+  background: linear-gradient(to right, var(--vol-color, #22d3a0) 0%, var(--vol-color, #22d3a0) var(--vol-pct, 16.6%), transparent var(--vol-pct, 16.6%), transparent 100%);
+}
