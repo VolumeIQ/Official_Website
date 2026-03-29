@@ -56,11 +56,19 @@ const AdBlockModal = () => {
         <h3 className="ab-title">Supporting Development</h3>
         
         <p className="ab-desc">
-          VolumeIQ is crafted by a <span className="highlight">solo developer</span> and thrives on your support. 
+          VolumeIQ is crafted by a <span className="highlight"><a href="https://www.youtube.com/@404-Found" target="_blank" rel="noopener noreferrer">solo developer</a></span> and thrives on your support. 
           If you enjoy the extension, please consider disabling your ad blocker for this site. 
-          <br /><br />
-          We know ads can be distracting, so the choice is entirely yours. ❤️
         </p>
+
+        <strong>
+          We know ads can be distracting, so the choice is entirely yours. ❤️
+        </strong>
+
+        <div style={{ textAlign: 'center', marginBottom: '24px', marginTop: '12px' }}>
+          <a href="https://www.youtube.com/@404-Found" target="_blank" rel="noopener noreferrer" className="link-orange">
+            Check out my YouTube channel
+          </a>
+        </div>
 
         <div className="ab-actions">
           <button className="ab-btn-primary" onClick={() => window.location.reload()}>

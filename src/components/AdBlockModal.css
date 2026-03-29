@@ -5,10 +5,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(4, 4, 10, 0.55);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background: rgba(4, 4, 10, 0.75); /* Darker overlay */
+  backdrop-filter: blur(28px); /* Stronger blur for more focus */
+  -webkit-backdrop-filter: blur(28px);
   padding: 24px;
+  transition: all 0.5s ease-in-out;
 }
 
 .ab-glass-card {
@@ -71,6 +72,32 @@
   font-weight: 600;
 }
 
+.ab-quote {
+  font-family: var(--f-body);
+  font-style: italic;
+  font-size: 14px;
+  color: var(--t2);
+  background: rgba(255, 255, 255, 0.02);
+  border-left: 3px solid var(--acc);
+  padding: 16px 20px;
+  margin: 0 0 32px 0;
+  text-align: left;
+  border-radius: 0 var(--r-md) var(--r-md) 0;
+  line-height: 1.5;
+  position: relative;
+}
+
+.ab-quote::before {
+  content: '“';
+  position: absolute;
+  top: -10px;
+  left: 10px;
+  font-size: 40px;
+  color: var(--acc);
+  opacity: 0.15;
+  font-family: serif;
+}
+
 .ab-actions {
   display: flex;
   flex-direction: column;
@@ -107,6 +134,21 @@
 
 .ab-btn-text:hover {
   color: var(--t2);
+}
+
+.link-orange {
+  color: var(--acc);
+  font-weight: 600;
+  font-family: var(--f-mono);
+  font-size: 13px;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: all 0.2s var(--ease);
+}
+
+.link-orange:hover {
+  color: var(--acc-h);
+  border-bottom: 1px solid var(--acc-h);
 }
 
 @keyframes abFadeInUp {
