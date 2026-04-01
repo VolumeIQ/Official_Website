@@ -451,7 +451,7 @@ body {
   border-radius: var(--r-lg);
   border: 1px solid var(--border-normal);
   box-shadow: 0 32px 80px rgba(0, 0, 0, 0.8), 0 0 60px rgba(120, 80, 255, 0.04);
-  overflow: hidden;
+  overflow: visible;
   transition: transform 0.5s var(--ease);
   transform: perspective(1200px) rotateY(-6deg) rotateX(3deg);
 }
@@ -466,6 +466,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  border-top-left-radius: var(--r-lg);
+  border-top-right-radius: var(--r-lg);
 }
 .sim-hdr-left {
   display: flex;
@@ -1273,4 +1275,187 @@ body {
   z-index: -1;
   filter: blur(25px);
   opacity: 0.6;
+}
+
+/* Sim Duck Slider */
+.sim-duck-slider {
+  width: 80px;
+  height: 4px;
+  appearance: none;
+  -webkit-appearance: none;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+}
+.sim-duck-slider::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 4px;
+  border-radius: 4px;
+  background: linear-gradient(to right, var(--acc-h) 0%, var(--acc-h) var(--duck-pct, 0%), transparent var(--duck-pct, 0%), transparent 100%);
+}
+.sim-duck-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--acc-h);
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 10px var(--acc-glow);
+  margin-top: -5px;
+}
+
+/* Sim Mixer Advanced */
+.sim-mix-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: all 0.2s ease;
+  margin-bottom: 6px;
+}
+.sim-mix-card:last-child { margin-bottom: 0; }
+.sim-mix-card:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+.sim-mix-row-1 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.sim-mix-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.sim-mix-icon { font-size: 14px; flex-shrink: 0; }
+.sim-mix-name {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--t1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sim-mix-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.sim-mix-btn {
+  width: 21px;
+  height: 21px;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--t2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+  font-weight: 700;
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+.sim-mix-btn.active { color: var(--grn); border-color: rgba(34, 211, 160, 0.3); background: rgba(34, 211, 160, 0.08); }
+.sim-mix-btn.active-solo { color: #f87171; border-color: rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.08); }
+.sim-mix-btn.active-global { color: var(--acc-h); border-color: var(--acc-bdr); background: var(--acc-dim); }
+.sim-mix-num { font-family: var(--f-mono); font-size: 10px; font-weight: 700; margin-left: 2px; }
+
+.sim-mix-row-2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sim-tab-slider-wrap {
+  flex: 1;
+  height: 12px;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+.sim-tab-slider-bg {
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.sim-tab-slider-fill { height: 100%; border-radius: 2px; }
+.sim-tab-slider-thumb {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 8px rgba(0,0,0,0.5);
+}
+.sim-mix-mute-mini {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--t2);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.sim-mix-mute-mini.muted { color: #f87171; background: rgba(239, 68, 68, 0.08); }
+
+/* Accordion Animation */
+.sim-acc-content-wrap {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.4s var(--spring), opacity 0.3s ease;
+  opacity: 0;
+  overflow: hidden;
+}
+.sim-acc-content-wrap.open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+.sim-acc-content {
+  min-height: 0;
+}
+
+/* Interactive Tab Slider */
+.sim-tab-slider {
+  width: 100%;
+  height: 3px;
+  appearance: none;
+  -webkit-appearance: none;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+  position: relative;
+}
+.sim-tab-slider::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 3px;
+  border-radius: 2px;
+  background: linear-gradient(to right, var(--tab-vol-color, #22d3a0) 0%, var(--tab-vol-color, #22d3a0) var(--tab-vol-pct, 0%), transparent var(--tab-vol-pct, 0%), transparent 100%);
+}
+.sim-tab-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.2);
+  box-shadow: 0 0 6px rgba(0,0,0,0.4);
+  margin-top: -3.5px;
+  transition: transform 0.1s ease;
+}
+.sim-tab-slider:hover::-webkit-slider-thumb {
+  transform: scale(1.3);
 }
