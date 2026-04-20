@@ -43,6 +43,12 @@ const Navbar = () => {
           <NavLink smooth to="/#shortcuts" className="nav-link" onClick={handleNavClick}>Shortcuts</NavLink>
           <NavLink smooth to="/#support" className="nav-link" onClick={handleNavClick}>Contact</NavLink>
           <NavLink smooth to="/#faq" className="nav-link" onClick={handleNavClick}>FAQ</NavLink>
+          <a href="https://www.patreon.com/c/404_Found/membership" target="_blank" rel="noopener noreferrer" className="nav-patron" onClick={handleNavClick}>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+            </svg>
+            Support The Creator
+          </a>
           <a href={EXTENSION_LINK} target="_blank" rel="noopener noreferrer" className="nav-cta">Add to Chrome</a>
         </div>
       </div>

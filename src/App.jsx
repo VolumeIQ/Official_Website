@@ -11,24 +11,17 @@ import CTA from './components/CTA';
 import Footer from './components/Footer';
 import { Privacy, Terms } from './components/Legal';
 import NotFound from './components/NotFound';
-import AdSense from './components/AdSense';
-import AdBlockModal from './components/AdBlockModal';
+import SupportModal from './components/SupportModal';
 import './App.css';
 
 const Home = () => {
   return (
     <main id="main-content">
       <Hero />
-      <div className="container">
-         <AdSense slot="HOME_TOP_AD" />
-      </div>
       <Features />
       <HowTo />
       <Shortcuts />
       <Support />
-      <div className="container" style={{ margin: '4rem auto' }}>
-         <AdSense slot="HOME_BOTTOM_AD" />
-      </div>
       <FAQ />
       <CTA />
     </main>
@@ -86,7 +79,7 @@ function App() {
   return (
     <div className="app">
       <Navbar />
-      <AdBlockModal />
+      <SupportModal />
       
       <Routes>
         <Route path="/" element={<Home />} />

@@ -5,6 +5,7 @@ const InteractiveDemo = () => {
   const [vol, setVol] = useState(100);
   const [muted, setMuted] = useState(false);
   const [normActive, setNormActive] = useState(false);
+  const [monoActive, setMonoActive] = useState(false);
   const [duckingActive, setDuckingActive] = useState(false);
   const [duckLevel, setDuckLevel] = useState(20);
   const [rememberActive, setRememberActive] = useState(true);
@@ -65,10 +66,11 @@ const InteractiveDemo = () => {
   }, []);
 
   const getVolColor = (v) => {
-    if (v > 400) return '#ef4444';
-    if (v > 200) return '#f97316';
+    if (v > 800) return '#ef4444'; // Red
+    if (v > 500) return '#f97316'; // Orange
+    if (v > 200) return '#fbbf24'; // Yellow
     if (v > 100) return '#fbbf24';
-    return '#22d3a0';
+    return '#22d3a0'; // Green
   };
 
   // Improved easing with overshoot for human feel
@@ -93,8 +95,8 @@ const InteractiveDemo = () => {
     },
     {
       label: 'Trying a preset',
-      target: 'preset-150',
-      action: { type: 'click-preset', vol: 150 },
+      target: 'preset-400',
+      action: { type: 'click-preset', vol: 400 },
       delay: 2000,
     },
     {
@@ -102,6 +104,12 @@ const InteractiveDemo = () => {
       target: 'norm-toggle',
       action: { type: 'toggle', key: 'norm' },
       delay: 2500,
+    },
+    {
+      label: 'Using Mono Audio output',
+      target: 'mono-toggle',
+      action: { type: 'toggle', key: 'mono' },
+      delay: 2000,
     },
     {
       label: 'Turning on Smart Ducking',
@@ -128,9 +136,9 @@ const InteractiveDemo = () => {
       delay: 2200,
     },
     {
-      label: 'Cranking it to 380%',
+      label: 'Cranking it to 850%',
       target: 'slider',
-      action: { type: 'slide', toVol: 380 },
+      action: { type: 'slide', toVol: 850 },
       delay: 1800,
     },
     {
@@ -338,6 +346,7 @@ const InteractiveDemo = () => {
 
         if (act.type === 'toggle') {
           if (act.key === 'norm') setNormActive(p => !p);
+          else if (act.key === 'mono') setMonoActive(p => !p);
           else if (act.key === 'duck') setDuckingActive(p => !p);
           else if (act.key === 'remember') setRememberActive(p => !p);
           else if (act.key === 'mute') setMuted(p => !p);
@@ -362,7 +371,7 @@ const InteractiveDemo = () => {
           if (el) {
             const rel = getRel(el);
             targetPosRef.current = {
-              x: rel.x + (act.toVol / 600) * rel.w - 4,
+              x: rel.x + (act.toVol / 1000) * rel.w - 4,
               y: rel.y + rel.h / 2 - 4,
             };
           }
@@ -422,7 +431,7 @@ const InteractiveDemo = () => {
         if (el) {
           const rel = getRel(el);
           const rx = Math.max(0, Math.min(1, (cx + 6 - rel.x) / rel.w));
-          setVol(Math.round(rx * 600));
+          setVol(Math.round(rx * 1000));
         }
         if (progressRef.current >= 1) finishAction();
       }
@@ -488,7 +497,7 @@ const InteractiveDemo = () => {
       ctx.stroke();
 
       // Volume arc with gradient
-      const pct = Math.min(vol / 600, 1);
+      const pct = Math.min(vol / 1000, 1);
       const va = ta * pct;
       if (va > 0.01) {
         const ex = cx + R * Math.cos(sa + va);
@@ -683,7 +692,8 @@ const InteractiveDemo = () => {
               MUTED
             </span>
           )}
-          {normActive && <span className="sim-hdr-pill sim-pill-norm">NORM</span>}
+          {monoActive && <span className="sim-hdr-pill sim-pill-norm">MONO</span>}
+          {normActive && <span className="sim-hdr-pill sim-pill-norm" style={{ borderLeft: 'none' }}>NORM</span>}
           {isGlobal && (
             <span className="sim-hdr-pill sim-pill-boost">GLOBAL</span>
           )}
@@ -773,17 +783,16 @@ const InteractiveDemo = () => {
               ref={setElRef('slider')}
               type="range"
               className="sim-slider"
-              min="0" max="600" step="1"
+              min="0" max="1000" step="1"
               value={vol}
               onChange={(e) => setVol(parseInt(e.target.value))}
               style={{
-                '--vol-pct': `${(vol / 600) * 100}%`,
+                '--vol-pct': `${(vol / 1000) * 100}%`,
                 '--vol-color': getVolColor(vol),
               }}
             />
             <div className="sim-marks">
-              <span>0</span><span>100</span><span>200</span>
-              <span>300</span><span>400</span><span>500</span><span>600</span>
+              <span>0</span><span>200</span><span>400</span><span>600</span><span>800</span><span>1000</span>
             </div>
           </div>
 
@@ -808,7 +817,7 @@ const InteractiveDemo = () => {
               <span>{muted ? 'Unmute' : 'Mute'}</span>
             </button>
             <div className="sim-presets">
-              {[50, 75, 100, 150, 200].map(v => (
+              {[100, 200, 400, 800, 1000].map(v => (
                 <div
                   key={v}
                   ref={setElRef(`preset-${v}`)}
@@ -848,13 +857,17 @@ const InteractiveDemo = () => {
               <div className="sim-feat-row" onClick={() => setNormActive(!normActive)}>
                 <div>
                   <div className="sim-feat-name">Normalize Audio</div>
-                  {normActive && (
-                    <div style={{ fontSize: 9, color: '#22d3a0', fontFamily: "'JetBrains Mono', monospace", marginTop: 2 }}>
-                      ✓ Level balanced
-                    </div>
-                  )}
                 </div>
                 <div ref={setElRef('norm-toggle')} className={`sim-toggle ${normActive ? 'on' : ''}`} />
+              </div>
+
+              {/* Mono Audio */}
+              <div className="sim-feat-row" onClick={() => setMonoActive(!monoActive)}>
+                <div>
+                  <div className="sim-feat-name">Mono Audio</div>
+                  <div className="sim-feat-sub">Merge stereo channels</div>
+                </div>
+                <div ref={setElRef('mono-toggle')} className={`sim-toggle ${monoActive ? 'on' : ''}`} />
               </div>
 
               {/* Smart Ducking */}
@@ -961,14 +974,14 @@ const InteractiveDemo = () => {
                   <div className="sim-mix-row-2">
                     <div className="sim-tab-slider-wrap">
                       <input 
-                        type="range" min="0" max="600"
+                        type="range" min="0" max="1000"
                         value={tab.vol}
                         onChange={(e) => {
                           const v = parseInt(e.target.value);
                           setTabs(prev => prev.map(t => t.id === tab.id ? { ...t, vol: v, muted: v === 0 } : t));
                         }}
                         className="sim-tab-slider"
-                        style={{ '--tab-vol-pct': `${(tab.vol / 600) * 100}%`, '--tab-vol-color': getVolColor(tab.vol) }}
+                        style={{ '--tab-vol-pct': `${(tab.vol / 1000) * 100}%`, '--tab-vol-color': getVolColor(tab.vol) }}
                       />
                     </div>
                     <div 

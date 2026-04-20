@@ -15,7 +15,7 @@ const Features = () => {
                 <path d="M15.54 8.46a5 5 0 0 1 0 7.07" /><path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
               </svg>
             </div>
-            <div className="fc-title">Volume Boost - 600%</div>
+            <div className="fc-title">Volume Boost - 1000%</div>
             <div className="fc-desc">Go beyond the browser's 100% limit. Amplify quiet videos, podcasts, and music using Web Audio API gain processing.</div>
           </div>
           <div className="feature-card animate d1">
@@ -41,13 +41,13 @@ const Features = () => {
           <div className="feature-card animate d3">
             <div className="fc-icon">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--acc-h)" strokeWidth="2">
-                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
-                <polyline points="17 21 17 13 7 13 7 21" /><polyline points="7 3 7 8 15 8" />
+                <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
+                <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
               </svg>
             </div>
-            <div className="fc-title">Per-Site Memory</div>
-            <div className="fc-desc">Remembers volume for each website automatically. YouTube at 150%, Netflix at 80% - set once, applied forever.</div>
-            <span className="fc-badge new">Auto-Save</span>
+            <div className="fc-title">Mono Audio</div>
+            <div className="fc-desc">Downmix stereo to a single channel. Perfect for podcasts with unbalanced audio, broken headphones, or single-ear listening.</div>
+            <span className="fc-badge new">New</span>
           </div>
           <div className="feature-card animate d4">
             <div className="fc-icon">
